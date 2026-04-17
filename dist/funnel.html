@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Free AI Growth Strategy | SLP Media</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Calendly -->
+  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+  <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Space Grotesk', 'monospace'],
+          },
+          colors: {
+            slp: { cyan: '#00f0ff', dark: '#020617', card: '#0f172a' }
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'fade-up': 'fadeUp 0.5s ease-out forwards',
+            'pulse-dot': 'pulseDot 2s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%,100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(16px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulseDot: {
+              '0%,100%': { opacity: '1', transform: 'scale(1)' },
+              '50%': { opacity: '0.4', transform: 'scale(1.3)' },
+            },
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { overflow-x: hidden; }
+    body { background-color: #020617; color: white; font-family: 'Outfit', sans-serif; }
+
+    /* Step slide transitions */
+    .step { display: none; animation: fadeUp 0.45s ease-out forwards; }
+    .step.active { display: block; }
+
+    /* Option card selected state */
+    .opt-card { cursor: pointer; transition: all 0.2s ease; border: 1.5px solid rgba(255,255,255,0.08); }
+    .opt-card:hover { border-color: rgba(0,240,255,0.4); background: rgba(0,240,255,0.04); transform: translateY(-1px); }
+    .opt-card.selected { border-color: #00f0ff; background: rgba(0,240,255,0.08); box-shadow: 0 0 20px rgba(0,240,255,0.15); }
+    .opt-card.selected .opt-check { opacity: 1; transform: scale(1); }
+    .opt-check { opacity: 0; transform: scale(0.5); transition: all 0.2s ease; }
+
+    /* Progress bar */
+    #progress-bar { transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+    /* Input focus */
+    .slp-input:focus { outline: none; border-color: rgba(0,240,255,0.6); box-shadow: 0 0 0 3px rgba(0,240,255,0.08); }
+
+    /* Glow button */
+    .glow-btn { transition: all 0.3s ease; }
+    .glow-btn:hover { box-shadow: 0 0 30px rgba(0,240,255,0.4); transform: translateY(-1px) scale(1.02); }
+    .glow-btn:active { transform: scale(0.98); }
+    .glow-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #020617; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+
+    /* Ambient glow */
+    .ambient { pointer-events: none; }
+
+    /* Stars background */
+    .stars { background-image: radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 100%), radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.1) 0%, transparent 100%), radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 100%); }
+
+    /* Calendly override */
+    .calendly-inline-widget { min-width: 280px !important; }
+
+    /* Safe area */
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+    @media (max-width: 640px) {
+      .opt-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .opt-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body class="min-h-screen stars">
+
+  <!-- ── Ambient background glows ───────────────────────────────────────── -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none ambient z-0">
+    <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-slp-cyan/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[100px]"></div>
+  </div>
+
+  <!-- ── Navbar ──────────────────────────────────────────────────────────── -->
+  <nav class="relative z-10 flex items-center justify-between px-5 py-4 md:px-8 border-b border-white/5">
+    <a href="slp-media-standalone.html" class="text-xl font-bold tracking-tighter">
+      <span class="text-slp-cyan">SLP</span><span class="text-white ml-1 font-mono">MEDIA</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse-dot inline-block"></span>
+        Free Assessment
+      </div>
+      <a href="slp-media-standalone.html" class="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Back to site
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Progress bar ───────────────────────────────────────────────────── -->
+  <div class="relative z-10 w-full h-0.5 bg-white/5">
+    <div id="progress-bar" class="h-full bg-gradient-to-r from-slp-cyan to-cyan-300 shadow-[0_0_8px_rgba(0,240,255,0.6)]" style="width:0%"></div>
+  </div>
+
+  <!-- ── Step counter & back ─────────────────────────────────────────────── -->
+  <div id="step-header" class="relative z-10 flex items-center justify-between px-5 py-3 md:px-8 hidden">
+    <button id="back-btn" onclick="prevStep()" class="flex items-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      Back
+    </button>
+    <span id="step-counter" class="text-xs text-slate-500 font-mono">Step 1 of 6</span>
+    <div class="w-16"></div>
+  </div>
+
+  <!-- ── Main content ────────────────────────────────────────────────────── -->
+  <main class="relative z-10 w-full max-w-2xl mx-auto px-4 py-6 md:py-10 safe-bottom">
+
+    <!-- ═══ STEP 0 — Hook / Landing ═══════════════════════════════════════ -->
+    <div id="step-0" class="step active text-center">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slp-cyan/10 border border-slp-cyan/20 text-slp-cyan text-xs font-bold tracking-widest uppercase mb-6">
+        <span class="w-2 h-2 rounded-full bg-slp-cyan animate-pulse-dot inline-block"></span>
+        Free Strategy Assessment
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4">
+        Find Out Exactly How AI Can<br/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-slp-cyan to-cyan-300">Scale Your Business</span>
+      </h1>
+
+      <p class="text-slate-400 text-base md:text-lg max-w-lg mx-auto mb-8 leading-relaxed">
+        Answer 6 quick questions. We'll build you a <span class="text-white font-medium">custom AI growth roadmap</span> — then book a free call with our founders to walk you through it.
+      </p>
+
+      <!-- Value props -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mb-10 text-sm">
+        <div class="flex items-center gap-2 text-slate-300 bg-white/5 rounded-full px-4 py-2 border border-white/8">
+          <svg class="w-4 h-4 text-slp-cyan flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          Takes 2 minutes
+        </div>
+        <div class="flex items-center gap-2 text-slate-300 bg-white/5 rounded-full px-4 py-2 border border-white/8">
+          <svg class="w-4 h-4 text-slp-cyan flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          100% free, no obligation
+        </div>
+        <div class="flex items-center gap-2 text-slate-300 bg-white/5 rounded-full px-4 py-2 border border-white/8">
+          <svg class="w-4 h-4 text-slp-cyan flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          Custom roadmap included
+        </div>
+      </div>
+
+      <button onclick="startFunnel()" class="glow-btn w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-slp-cyan text-black font-bold text-base px-10 py-4 rounded-full">
+        Start My Free Assessment
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </button>
+
+      <!-- Social proof -->
+      <div class="mt-10 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-slate-500">
+        <div class="flex -space-x-2.5">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-slp-dark flex items-center justify-center text-[10px] text-white font-bold">L</div>
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600 border-2 border-slp-dark flex items-center justify-center text-[10px] text-white font-bold">S</div>
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border-2 border-slp-dark flex items-center justify-center text-[10px] text-white font-bold">G</div>
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 border-2 border-slp-dark flex items-center justify-center text-[10px] text-white font-bold">C</div>
+        </div>
+        <p><span class="text-white font-semibold">50+ businesses</span> have scaled with SLP Media</p>
+        <div class="flex gap-0.5">
+          <svg class="w-4 h-4 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="w-4 h-4 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="w-4 h-4 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="w-4 h-4 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="w-4 h-4 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <span class="text-slate-400 text-xs ml-1">5.0 on Google</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 1 — Business Type ════════════════════════════════════════ -->
+    <div id="step-1" class="step">
+      <p class="text-slp-cyan font-mono text-xs tracking-widest uppercase mb-2">Question 1 of 6</p>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2">What best describes your business?</h2>
+      <p class="text-slate-400 text-sm mb-7">This helps us understand which AI solutions will have the biggest impact for you.</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-2 gap-3 md:gap-4">
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative" data-group="business" data-value="Local Service Business">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">🏠</div>
+          <p class="font-semibold text-white text-sm">Local Service Business</p>
+          <p class="text-xs text-slate-500 mt-1">Trades, clinics, agencies</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative" data-group="business" data-value="E-Commerce Store">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">🛒</div>
+          <p class="font-semibold text-white text-sm">E-Commerce Store</p>
+          <p class="text-xs text-slate-500 mt-1">Products sold online</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative" data-group="business" data-value="B2B Company">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">🤝</div>
+          <p class="font-semibold text-white text-sm">B2B Company</p>
+          <p class="text-xs text-slate-500 mt-1">Sells to other businesses</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative" data-group="business" data-value="Agency or Consultancy">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">💼</div>
+          <p class="font-semibold text-white text-sm">Agency / Consultancy</p>
+          <p class="text-xs text-slate-500 mt-1">Professional services</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative" data-group="business" data-value="Startup or SaaS">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">🚀</div>
+          <p class="font-semibold text-white text-sm">Startup / SaaS</p>
+          <p class="text-xs text-slate-500 mt-1">Early-stage or tech company</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative" data-group="business" data-value="Other">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">✨</div>
+          <p class="font-semibold text-white text-sm">Something Else</p>
+          <p class="text-xs text-slate-500 mt-1">We'll figure it out</p>
+        </div>
+      </div>
+
+      <button id="next-1" onclick="nextStep()" disabled class="glow-btn mt-6 w-full flex items-center justify-center gap-2 bg-slp-cyan text-black font-bold py-4 rounded-full">
+        Continue <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </button>
+    </div>
+
+    <!-- ═══ STEP 2 — Biggest Challenge ═══════════════════════════════════ -->
+    <div id="step-2" class="step">
+      <p class="text-slp-cyan font-mono text-xs tracking-widest uppercase mb-2">Question 2 of 6</p>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2">What's your biggest growth challenge right now?</h2>
+      <p class="text-slate-400 text-sm mb-7">Be honest — this helps us pinpoint your highest-impact opportunities.</p>
+
+      <div class="flex flex-col gap-3">
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center gap-4" data-group="challenge" data-value="Not generating enough leads">
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold text-white">Not generating enough leads</p>
+            <p class="text-xs text-slate-500">Pipeline is inconsistent or too thin</p>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center gap-4" data-group="challenge" data-value="Poor website conversions">
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold text-white">Poor website conversions</p>
+            <p class="text-xs text-slate-500">Getting traffic but not enough enquiries</p>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center gap-4" data-group="challenge" data-value="Too much manual/repetitive work">
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold text-white">Too much manual / repetitive work</p>
+            <p class="text-xs text-slate-500">Drowning in tasks that should be automated</p>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center gap-4" data-group="challenge" data-value="Weak online presence">
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold text-white">Weak online presence</p>
+            <p class="text-xs text-slate-500">Outdated site, no Google visibility</p>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center gap-4" data-group="challenge" data-value="Scaling the business">
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold text-white">Scaling the business</p>
+            <p class="text-xs text-slate-500">Revenue has plateaued, need growth</p>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center gap-4" data-group="challenge" data-value="Missing calls and enquiries">
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div>
+            <p class="font-semibold text-white">Missing calls &amp; enquiries</p>
+            <p class="text-xs text-slate-500">Can't respond fast enough 24/7</p>
+          </div>
+        </div>
+      </div>
+
+      <button id="next-2" onclick="nextStep()" disabled class="glow-btn mt-6 w-full flex items-center justify-center gap-2 bg-slp-cyan text-black font-bold py-4 rounded-full">
+        Continue <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </button>
+    </div>
+
+    <!-- ═══ STEP 3 — Services (multi-select) ═════════════════════════════ -->
+    <div id="step-3" class="step">
+      <p class="text-slp-cyan font-mono text-xs tracking-widest uppercase mb-2">Question 3 of 6</p>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2">What are you looking to implement?</h2>
+      <p class="text-slate-400 text-sm mb-7">Select all that apply — don't worry, we'll figure out the best package together.</p>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative multi" data-group="services" data-value="AI Voice Agent">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">📞</div>
+          <p class="font-semibold text-white text-sm">AI Voice Agent</p>
+          <p class="text-xs text-slate-500 mt-1">Never miss a call</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative multi" data-group="services" data-value="Smart Website">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">🌐</div>
+          <p class="font-semibold text-white text-sm">Smart Website</p>
+          <p class="text-xs text-slate-500 mt-1">High-converting site</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative multi" data-group="services" data-value="Automated Lead Generation">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">⚡</div>
+          <p class="font-semibold text-white text-sm">Auto Lead Gen</p>
+          <p class="text-xs text-slate-500 mt-1">Fill your pipeline 24/7</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative multi" data-group="services" data-value="Workflow Automation">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">⚙️</div>
+          <p class="font-semibold text-white text-sm">Workflow Automation</p>
+          <p class="text-xs text-slate-500 mt-1">Eliminate manual work</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative multi" data-group="services" data-value="AI Chatbot">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">🤖</div>
+          <p class="font-semibold text-white text-sm">AI Chatbot</p>
+          <p class="text-xs text-slate-500 mt-1">24/7 customer support</p>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative multi" data-group="services" data-value="Meta / Google Ads">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="text-2xl mb-2">📊</div>
+          <p class="font-semibold text-white text-sm">Meta / Google Ads</p>
+          <p class="text-xs text-slate-500 mt-1">Paid traffic that converts</p>
+        </div>
+      </div>
+
+      <button id="next-3" onclick="nextStep()" disabled class="glow-btn mt-6 w-full flex items-center justify-center gap-2 bg-slp-cyan text-black font-bold py-4 rounded-full">
+        Continue <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </button>
+    </div>
+
+    <!-- ═══ STEP 4 — Revenue ══════════════════════════════════════════════ -->
+    <div id="step-4" class="step">
+      <p class="text-slp-cyan font-mono text-xs tracking-widest uppercase mb-2">Question 4 of 6</p>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2">What's your current monthly revenue?</h2>
+      <p class="text-slate-400 text-sm mb-7">Strictly confidential — helps us tailor the right solutions to your stage of growth.</p>
+
+      <div class="flex flex-col gap-3">
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center justify-between" data-group="revenue" data-value="Under £2,000">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 font-mono font-bold text-sm">£</div>
+            <div>
+              <p class="font-semibold text-white">Under £2,000 / month</p>
+              <p class="text-xs text-slate-500">Just getting started</p>
+            </div>
+          </div>
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center justify-between" data-group="revenue" data-value="£2,000 – £8,000">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-green-400 font-mono font-bold text-sm">££</div>
+            <div>
+              <p class="font-semibold text-white">£2,000 – £8,000 / month</p>
+              <p class="text-xs text-slate-500">Early growth stage</p>
+            </div>
+          </div>
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center justify-between" data-group="revenue" data-value="£8,000 – £25,000">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-blue-400 font-mono font-bold text-sm">£££</div>
+            <div>
+              <p class="font-semibold text-white">£8,000 – £25,000 / month</p>
+              <p class="text-xs text-slate-500">Established business</p>
+            </div>
+          </div>
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center justify-between" data-group="revenue" data-value="£25,000 – £100,000">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slp-cyan font-mono font-bold text-sm">££££</div>
+            <div>
+              <p class="font-semibold text-white">£25,000 – £100,000 / month</p>
+              <p class="text-xs text-slate-500">Scaling fast</p>
+            </div>
+          </div>
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+        </div>
+        <div class="opt-card rounded-xl p-4 bg-slate-900/60 relative flex items-center justify-between" data-group="revenue" data-value="£100,000+">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-slp-cyan/20 to-purple-500/20 flex items-center justify-center text-yellow-400 font-mono font-bold text-sm border border-yellow-400/20">🔥</div>
+            <div>
+              <p class="font-semibold text-white">£100,000+ / month</p>
+              <p class="text-xs text-slate-500">Enterprise-level</p>
+            </div>
+          </div>
+          <div class="opt-check w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center flex-shrink-0">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <button id="next-4" onclick="nextStep()" disabled class="glow-btn mt-6 w-full flex items-center justify-center gap-2 bg-slp-cyan text-black font-bold py-4 rounded-full">
+        Continue <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </button>
+    </div>
+
+    <!-- ═══ STEP 5 — Budget ═══════════════════════════════════════════════ -->
+    <div id="step-5" class="step">
+      <p class="text-slp-cyan font-mono text-xs tracking-widest uppercase mb-2">Question 5 of 6</p>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2">What's your monthly investment budget?</h2>
+      <p class="text-slate-400 text-sm mb-7">For marketing tech and AI systems. This helps us recommend the right starting package.</p>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="opt-card rounded-xl p-5 bg-slate-900/60 relative text-center" data-group="budget" data-value="Under £500/mo">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <p class="text-xl font-bold text-white mb-1">Under £500</p>
+          <p class="text-xs text-slate-500">per month</p>
+        </div>
+        <div class="opt-card rounded-xl p-5 bg-slate-900/60 relative text-center" data-group="budget" data-value="£500 – £1,500/mo">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <p class="text-xl font-bold text-white mb-1">£500 – £1,500</p>
+          <p class="text-xs text-slate-500">per month</p>
+        </div>
+        <div class="opt-card rounded-xl p-5 bg-slate-900/60 relative text-center border border-slp-cyan/20" data-group="budget" data-value="£1,500 – £3,500/mo">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-slp-cyan text-black text-[10px] font-bold rounded-full">MOST POPULAR</div>
+          <p class="text-xl font-bold text-white mb-1">£1,500 – £3,500</p>
+          <p class="text-xs text-slate-500">per month</p>
+        </div>
+        <div class="opt-card rounded-xl p-5 bg-slate-900/60 relative text-center" data-group="budget" data-value="£3,500+/mo">
+          <div class="opt-check absolute top-3 right-3 w-5 h-5 rounded-full bg-slp-cyan flex items-center justify-center">
+            <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <p class="text-xl font-bold text-slp-cyan mb-1">£3,500+</p>
+          <p class="text-xs text-slate-500">per month</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-600 text-center mt-4">💡 We work with businesses at all stages. No budget is too small to have a conversation.</p>
+
+      <button id="next-5" onclick="nextStep()" disabled class="glow-btn mt-5 w-full flex items-center justify-center gap-2 bg-slp-cyan text-black font-bold py-4 rounded-full">
+        Almost There <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </button>
+    </div>
+
+    <!-- ═══ STEP 6 — Contact Details ══════════════════════════════════════ -->
+    <div id="step-6" class="step">
+      <p class="text-slp-cyan font-mono text-xs tracking-widest uppercase mb-2">Question 6 of 6</p>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2">Where should we send your strategy?</h2>
+      <p class="text-slate-400 text-sm mb-7">We'll prepare a custom AI growth plan before your call. No spam, ever — promise.</p>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1.5 ml-1">Full Name <span class="text-red-400">*</span></label>
+          <input id="inp-name" type="text" placeholder="e.g. John Smith" autocomplete="name"
+            class="slp-input w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 transition-all" />
+          <p id="err-name" class="text-red-400 text-xs mt-1 ml-1 hidden">Please enter your name</p>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1.5 ml-1">Email Address <span class="text-red-400">*</span></label>
+          <input id="inp-email" type="email" placeholder="e.g. john@company.com" autocomplete="email"
+            class="slp-input w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 transition-all" />
+          <p id="err-email" class="text-red-400 text-xs mt-1 ml-1 hidden">Please enter a valid email</p>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1.5 ml-1">Phone Number <span class="text-red-400">*</span></label>
+          <input id="inp-phone" type="tel" placeholder="e.g. +44 7400 123456" autocomplete="tel"
+            class="slp-input w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 transition-all" />
+          <p id="err-phone" class="text-red-400 text-xs mt-1 ml-1 hidden">Please enter your phone number</p>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1.5 ml-1">Business Name <span class="text-slate-600">(optional)</span></label>
+          <input id="inp-business" type="text" placeholder="e.g. Smith Plumbing Ltd" autocomplete="organization"
+            class="slp-input w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 transition-all" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1.5 ml-1">Anything else you'd like us to know? <span class="text-slate-600">(optional)</span></label>
+          <textarea id="inp-notes" rows="3" placeholder="e.g. We're launching in 3 months and need a full system..."
+            class="slp-input w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 transition-all resize-none"></textarea>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-600 flex items-start gap-2 mt-4">
+        <svg class="w-4 h-4 text-slate-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        Your information is 100% secure and will never be shared. We hate spam as much as you do.
+      </p>
+
+      <button onclick="submitContact()" class="glow-btn mt-6 w-full flex items-center justify-center gap-2 bg-slp-cyan text-black font-bold py-4 rounded-full text-base">
+        Book My Free Strategy Call
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </button>
+    </div>
+
+    <!-- ═══ STEP 7 — Booking / Calendly ══════════════════════════════════ -->
+    <div id="step-7" class="step">
+      <!-- Success banner -->
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-slp-cyan/10 border border-slp-cyan/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-slp-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <p class="text-slp-cyan font-mono text-xs tracking-widest uppercase mb-2">Assessment Complete</p>
+        <h2 class="text-2xl sm:text-3xl font-bold mb-3">You're one step away! 🎯</h2>
+        <p class="text-slate-400 text-sm max-w-md mx-auto">Pick a time that works for you. Our founders will review your answers <span class="text-white font-medium">before the call</span> and come prepared with a custom AI growth plan.</p>
+      </div>
+
+      <!-- Summary of answers -->
+      <div id="summary-box" class="bg-slate-900/60 border border-white/8 rounded-2xl p-5 mb-6 space-y-3">
+        <p class="text-xs text-slate-500 uppercase font-mono tracking-widest mb-4">Your Profile Summary</p>
+        <div id="summary-items" class="space-y-2.5"></div>
+      </div>
+
+      <!-- What happens next -->
+      <div class="grid grid-cols-3 gap-3 mb-8 text-center text-xs">
+        <div class="bg-slate-900/40 border border-white/5 rounded-xl p-4">
+          <div class="text-2xl mb-2">📋</div>
+          <p class="font-semibold text-white mb-1">We Review</p>
+          <p class="text-slate-500">Your answers before the call</p>
+        </div>
+        <div class="bg-slate-900/40 border border-white/5 rounded-xl p-4">
+          <div class="text-2xl mb-2">🗺️</div>
+          <p class="font-semibold text-white mb-1">We Prepare</p>
+          <p class="text-slate-500">A custom AI roadmap for you</p>
+        </div>
+        <div class="bg-slate-900/40 border border-white/5 rounded-xl p-4">
+          <div class="text-2xl mb-2">🚀</div>
+          <p class="font-semibold text-white mb-1">We Discuss</p>
+          <p class="text-slate-500">How to scale your business</p>
+        </div>
+      </div>
+
+      <!-- Calendly widget -->
+      <div class="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden">
+        <div class="calendly-inline-widget" data-url="https://calendly.com/slp-media-demo/strategy-call?hide_event_type_details=0&hide_gdpr_banner=1&background_color=0f172a&text_color=ffffff&primary_color=00f0ff" style="min-width:280px;height:clamp(600px,80vh,750px);"></div>
+        <script type="text/javascript">Calendly && Calendly.initInlineWidgets();</script>
+      </div>
+
+      <!-- Trust badges -->
+      <div class="mt-8 flex flex-wrap justify-center gap-4 text-xs text-slate-500">
+        <div class="flex items-center gap-1.5"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>No obligation</div>
+        <div class="flex items-center gap-1.5"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>15-minute intro call</div>
+        <div class="flex items-center gap-1.5"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Speak directly to founders</div>
+        <div class="flex items-center gap-1.5"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Custom roadmap prepared</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Floating review strip ───────────────────────────────────────────── -->
+  <div id="review-strip" class="fixed bottom-0 left-0 right-0 z-20 bg-slate-950/95 backdrop-blur-md border-t border-white/5 px-4 py-3 flex items-center justify-between text-xs text-slate-400 safe-bottom">
+    <div class="flex items-center gap-2">
+      <div class="flex gap-0.5">
+        <svg class="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <svg class="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <svg class="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <svg class="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <svg class="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+      </div>
+      <span><strong class="text-white">5.0</strong> · "Very professional and results driven"</span>
+    </div>
+    <span class="text-slate-600 hidden sm:block">— Peter R. · Google Review</span>
+  </div>
+
+  <script>
+    // ── CLIENT CONFIG ──────────────────────────────────────────────────────
+    // To deploy for a client: update these values only
+    const CLIENT_CONFIG = {
+      businessName:  'SLP Media',
+      calendlyUrl:   'https://calendly.com/slp-media-demo/strategy-call',
+      ghlWebhookUrl: '',  // ← paste your GHL inbound webhook URL here
+      funnelSource:  'website-funnel',  // tag applied in GHL (change per traffic source)
+    };
+
+    // ── State ──────────────────────────────────────────────────────────────
+    let currentStep = 0;
+    const TOTAL_STEPS = 6;
+    const answers = {};
+    const multiAnswers = { services: [] };
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    function startFunnel() {
+      document.getElementById('review-strip').classList.add('hidden');
+      goToStep(1);
+    }
+
+    function goToStep(n) {
+      // Hide current
+      const prev = document.getElementById('step-' + currentStep);
+      if (prev) prev.classList.remove('active');
+
+      currentStep = n;
+
+      // Show new
+      const next = document.getElementById('step-' + n);
+      if (next) {
+        next.classList.add('active');
+        // Reset animation
+        next.style.animation = 'none';
+        next.offsetHeight;
+        next.style.animation = '';
+      }
+
+      // Update header
+      const header = document.getElementById('step-header');
+      const counter = document.getElementById('step-counter');
+      if (n >= 1 && n <= TOTAL_STEPS) {
+        header.classList.remove('hidden');
+        counter.textContent = 'Step ' + n + ' of ' + TOTAL_STEPS;
+        document.getElementById('back-btn').style.visibility = n === 1 ? 'hidden' : 'visible';
+      } else {
+        header.classList.add('hidden');
+      }
+
+      // Update progress bar
+      const pct = n === 0 ? 0 : n > TOTAL_STEPS ? 100 : Math.round((n / TOTAL_STEPS) * 100);
+      document.getElementById('progress-bar').style.width = pct + '%';
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextStep() {
+      if (currentStep < 7) goToStep(currentStep + 1);
+      if (currentStep === 7) buildSummary();
+    }
+
+    function prevStep() {
+      if (currentStep > 1) goToStep(currentStep - 1);
+    }
+
+    // ── Option card clicks ─────────────────────────────────────────────────
+    document.querySelectorAll('.opt-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const group = card.dataset.group;
+        const value = card.dataset.value;
+        const isMulti = card.classList.contains('multi');
+
+        if (isMulti) {
+          // Toggle multi-select
+          card.classList.toggle('selected');
+          const arr = multiAnswers[group] || [];
+          const idx = arr.indexOf(value);
+          if (idx === -1) arr.push(value);
+          else arr.splice(idx, 1);
+          multiAnswers[group] = arr;
+          // Enable next if at least one selected
+          const btn = document.getElementById('next-' + currentStep);
+          if (btn) btn.disabled = arr.length === 0;
+        } else {
+          // Single select — deselect others in group
+          document.querySelectorAll('[data-group="' + group + '"]').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          answers[group] = value;
+          // Enable next button
+          const btn = document.getElementById('next-' + currentStep);
+          if (btn) {
+            btn.disabled = false;
+            // Auto-advance after short delay for single select
+            setTimeout(() => {
+              if (currentStep >= 1 && currentStep <= 5) nextStep();
+            }, 350);
+          }
+        }
+      });
+    });
+
+    // ── Contact form submit ────────────────────────────────────────────────
+    function submitContact() {
+      let valid = true;
+
+      const name = document.getElementById('inp-name').value.trim();
+      const email = document.getElementById('inp-email').value.trim();
+      const phone = document.getElementById('inp-phone').value.trim();
+
+      // Validate name
+      const errName = document.getElementById('err-name');
+      if (!name) { errName.classList.remove('hidden'); valid = false; }
+      else errName.classList.add('hidden');
+
+      // Validate email
+      const errEmail = document.getElementById('err-email');
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRe.test(email)) { errEmail.classList.remove('hidden'); valid = false; }
+      else errEmail.classList.add('hidden');
+
+      // Validate phone
+      const errPhone = document.getElementById('err-phone');
+      if (!phone) { errPhone.classList.remove('hidden'); valid = false; }
+      else errPhone.classList.add('hidden');
+
+      if (!valid) return;
+
+      // Store contact details
+      answers.name = name;
+      answers.email = email;
+      answers.phone = phone;
+      answers.business = document.getElementById('inp-business').value.trim();
+      answers.notes = document.getElementById('inp-notes').value.trim();
+
+      // Send to GoHighLevel
+      sendToGHL({ name, email, phone,
+        business: document.getElementById('inp-business').value.trim(),
+        notes:    document.getElementById('inp-notes').value.trim()
+      });
+
+      // Move to booking
+      goToStep(7);
+      buildSummary();
+    }
+
+    // ── GHL Webhook ───────────────────────────────────────────────────────
+    async function sendToGHL(contact) {
+      if (!CLIENT_CONFIG.ghlWebhookUrl) return; // skip if not configured
+
+      const payload = {
+        // Contact fields (GHL maps these automatically)
+        firstName:   contact.name.split(' ')[0] || contact.name,
+        lastName:    contact.name.split(' ').slice(1).join(' ') || '',
+        email:       contact.email,
+        phone:       contact.phone,
+        companyName: contact.business || '',
+
+        // Custom qualifying fields
+        source:           CLIENT_CONFIG.funnelSource,
+        businessType:     answers.business   || '',
+        mainChallenge:    answers.challenge  || '',
+        servicesWanted:   (multiAnswers.services || []).join(', '),
+        monthlyRevenue:   answers.revenue    || '',
+        monthlyAdBudget:  answers.budget     || '',
+        additionalNotes:  contact.notes      || '',
+
+        // Meta
+        tags:        [CLIENT_CONFIG.funnelSource, 'funnel-lead', answers.budget || ''],
+        leadScore:   calcLeadScore(),
+        submittedAt: new Date().toISOString(),
+      };
+
+      try {
+        await fetch(CLIENT_CONFIG.ghlWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch (err) {
+        console.warn('GHL webhook failed:', err);
+        // Fail silently — don't block the user from booking
+      }
+    }
+
+    // ── Lead Score (helps GHL prioritise) ────────────────────────────────
+    function calcLeadScore() {
+      let score = 0;
+      const budgetScores = {
+        'Under £500/mo': 10, '£500–£1,500/mo': 25, '£1,500–£3,000/mo': 50,
+        '£3,000–£5,000/mo': 75, '£5,000+/mo': 100
+      };
+      const revenueScores = {
+        'Under £2k/mo': 10, '£2k–£5k/mo': 20, '£5k–£15k/mo': 40,
+        '£15k–£50k/mo': 70, '£50k+/mo': 100
+      };
+      score += budgetScores[answers.budget]  || 0;
+      score += revenueScores[answers.revenue] || 0;
+      score += (multiAnswers.services || []).length * 5;
+      return Math.min(score, 100);
+    }
+
+    // ── Build summary on booking step ─────────────────────────────────────
+    function buildSummary() {
+      const labels = {
+        business: '🏢 Business type',
+        challenge: '🎯 Main challenge',
+        revenue: '💰 Monthly revenue',
+        budget: '📊 Monthly budget',
+        name: '👤 Name',
+        email: '✉️ Email',
+      };
+
+      const container = document.getElementById('summary-items');
+      container.innerHTML = '';
+
+      // Single answers
+      Object.entries(labels).forEach(([key, label]) => {
+        if (answers[key]) {
+          const row = document.createElement('div');
+          row.className = 'flex items-start justify-between gap-4 text-sm';
+          row.innerHTML = '<span class="text-slate-500 flex-shrink-0">' + label + '</span><span class="text-white text-right">' + answers[key] + '</span>';
+          container.appendChild(row);
+        }
+      });
+
+      // Services (multi)
+      if (multiAnswers.services && multiAnswers.services.length > 0) {
+        const row = document.createElement('div');
+        row.className = 'flex items-start justify-between gap-4 text-sm';
+        row.innerHTML = '<span class="text-slate-500 flex-shrink-0">⚡ Interested in</span><span class="text-white text-right">' + multiAnswers.services.join(', ') + '</span>';
+        container.appendChild(row);
+      }
+    }
+
+    // ── Calendly re-init after DOM update ─────────────────────────────────
+    document.getElementById('step-7') && document.addEventListener('click', () => {
+      if (typeof Calendly !== 'undefined') {
+        try { Calendly.initInlineWidgets(); } catch(e) {}
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>

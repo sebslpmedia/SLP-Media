@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SLP Media — Full Stack AI System</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=css&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --cyan:#00f0ff;
+    --navy:#020617;
+    --card:#0f172a;
+    --border:rgba(255,255,255,0.07);
+    --text:#94a3b8;
+  }
+  body{background:var(--navy);color:white;font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+
+  /* ── NAV ── */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(2,6,23,0.95);backdrop-filter:blur(12px)}
+  .logo{font-size:1.2rem;font-weight:700;letter-spacing:-.04em}<br>
+  .logo span{color:var(--cyan)}
+  .tabs{display:flex;gap:.25rem;background:rgba(255,255,255,0.04);border-radius:999px;padding:.25rem}
+  .tab{padding:.4rem 1.1rem;border-radius:999px;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--text);transition:all .2s;border:none;background:none}
+  .tab.active{background:var(--cyan);color:#000}
+
+  /* ── HERO ── */
+  .hero{text-align:center;padding:3.5rem 1rem 2rem;position:relative;overflow:hidden}
+  .hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(0,240,255,.08) 0%,transparent 70%);pointer-events:none}
+  .hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-.04em;margin-bottom:.75rem}
+  .hero h1 span{color:var(--cyan)}
+  .hero p{color:var(--text);max-width:540px;margin:0 auto;font-size:1rem;line-height:1.6}
+  .badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,240,255,.06);border:1px solid rgba(0,240,255,.15);border-radius:999px;padding:.35rem .9rem;font-size:.75rem;color:var(--cyan);margin-bottom:1.2rem;font-weight:600}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+  /* ── VIEWS ── */
+  .view{display:none;padding:1.5rem 1.5rem 4rem;max-width:1300px;margin:0 auto}
+  .view.active{display:block}
+
+  /* ── OVERVIEW ── */
+  .system-grid{display:grid;grid-template-columns:1fr;gap:1.5rem}
+  @media(min-width:900px){.system-grid{grid-template-columns:1fr 1fr 1fr}}
+
+  /* ── CARDS ── */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
+  .card:hover{border-color:rgba(0,240,255,.2);transform:translateY(-2px)}
+  .card-glow{position:absolute;top:0;left:0;right:0;height:1px;opacity:0;transition:opacity .2s}
+  .card:hover .card-glow{opacity:1}
+  .card-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;flex-shrink:0}
+  .card-title{font-size:1rem;font-weight:700;margin-bottom:.35rem}
+  .card-desc{font-size:.82rem;color:var(--text);line-height:1.55;margin-bottom:.9rem}
+  .tools-row{display:flex;flex-wrap:wrap;gap:.4rem}
+  .tool-tag{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:.2rem .55rem;font-size:.7rem;color:#64748b;font-family:'Space Grotesk',sans-serif}
+
+  /* ── SECTION LABEL ── */
+  .section-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin:2rem 0 1rem}
+
+  /* ── JARVIS CENTER CARD ── */
+  .jarvis-card{background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(124,58,237,.06));border:1px solid rgba(0,240,255,.2);border-radius:20px;padding:2rem;text-align:center;margin-bottom:2rem;position:relative;overflow:hidden}
+  .jarvis-card::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(0,240,255,.08),transparent 70%);pointer-events:none}
+  .jarvis-title{font-size:1.6rem;font-weight:800;letter-spacing:-.04em;margin-bottom:.4rem}
+  .jarvis-sub{color:var(--text);font-size:.88rem;max-width:500px;margin:0 auto 1.2rem}
+  .jarvis-tags{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+  .jarvis-tag{background:rgba(0,240,255,.08);border:1px solid rgba(0,240,255,.15);border-radius:999px;padding:.3rem .8rem;font-size:.75rem;color:var(--cyan);font-weight:600}
+
+  /* ── AGENT CARDS ── */
+  .agents-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+  @media(min-width:600px){.agents-grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:1000px){.agents-grid{grid-template-columns:1fr 1fr 1fr}}
+
+  .agent-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;transition:border-color .2s}
+  .agent-card:hover{border-color:rgba(0,240,255,.2)}
+  .agent-head{display:flex;align-items:center;gap:.75rem}
+  .agent-num{font-size:.65rem;font-weight:700;color:var(--cyan);font-family:'Space Grotesk',sans-serif;letter-spacing:.08em;background:rgba(0,240,255,.07);border:1px solid rgba(0,240,255,.12);border-radius:6px;padding:.2rem .5rem}
+  .agent-name{font-size:.95rem;font-weight:700}
+  .agent-trigger{font-size:.72rem;color:#475569;line-height:1.5}
+  .agent-trigger strong{color:#64748b}
+  .agent-tools{display:flex;flex-wrap:wrap;gap:.35rem}
+  .agent-tool{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:5px;padding:.18rem .5rem;font-size:.68rem;color:#475569;font-family:'Space Grotesk',sans-serif}
+
+  /* ── FLOW VIEW ── */
+  .flow-list{display:flex;flex-direction:column;gap:0}
+  .flow-item{display:grid;grid-template-columns:180px 1fr;gap:1.5rem;align-items:stretch}
+  @media(max-width:600px){.flow-item{grid-template-columns:1fr}}
+  .flow-left{display:flex;flex-direction:column;align-items:flex-end;padding-right:1.5rem;border-right:1px solid var(--border);gap:0;position:relative}
+  @media(max-width:600px){.flow-left{border-right:none;border-bottom:1px solid var(--border);padding-right:0;padding-bottom:.75rem;align-items:flex-start}}
+  .flow-stage{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.75rem 0;color:#334155;text-align:right;position:relative}
+  @media(max-width:600px){.flow-stage{text-align:left}}
+  .flow-dot{position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;background:var(--cyan)}
+  @media(max-width:600px){.flow-dot{display:none}}
+  .flow-right{padding:1rem 0}
+  .flow-cards{display:flex;flex-wrap:wrap;gap:.6rem}
+  .flow-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-size:.8rem}
+  .flow-card-title{font-weight:600;margin-bottom:.2rem}
+  .flow-card-sub{color:var(--text);font-size:.73rem}
+  .flow-arrow{text-align:center;color:#1e293b;font-size:1.2rem;line-height:1;padding:.1rem 0}
+
+  /* ── STACK VIEW ── */
+  .stack-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+  @media(min-width:700px){.stack-grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:1100px){.stack-grid{grid-template-columns:1fr 1fr 1fr}}
+  .stack-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+  .stack-head{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+  .stack-icon{font-size:1.4rem}
+  .stack-name{font-size:.95rem;font-weight:700}
+  .stack-cost{font-size:.72rem;color:#475569;margin-left:auto;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:6px;padding:.18rem .5rem}
+  .stack-desc{font-size:.8rem;color:var(--text);line-height:1.55;margin-bottom:.75rem}
+  .stack-used{font-size:.72rem;color:#475569}
+  .stack-used strong{color:#64748b}
+
+  /* ── TIMELINE VIEW ── */
+  .timeline{display:flex;flex-direction:column;gap:0}
+  .tl-item{display:grid;grid-template-columns:120px 1fr;gap:1.5rem}
+  @media(max-width:600px){.tl-item{grid-template-columns:1fr}}
+  .tl-left{padding-right:1.5rem;border-right:1px solid var(--border);text-align:right;position:relative}
+  @media(max-width:600px){.tl-left{border-right:none;border-bottom:1px solid var(--border);padding-right:0;padding-bottom:.5rem;text-align:left}}
+  .tl-month{font-size:.8rem;font-weight:700;color:var(--cyan);padding:.75rem 0}
+  .tl-dot{position:absolute;right:-5px;top:1rem;width:9px;height:9px;border-radius:50%;background:var(--cyan)}
+  @media(max-width:600px){.tl-dot{display:none}}
+  .tl-right{padding:1rem 0;display:flex;flex-direction:column;gap:.5rem}
+  .tl-task{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem}
+  .tl-task-title{font-size:.85rem;font-weight:600;margin-bottom:.2rem}
+  .tl-task-desc{font-size:.75rem;color:var(--text)}
+  .tl-task.highlight{border-color:rgba(0,240,255,.2);background:rgba(0,240,255,.03)}
+  .tl-task.highlight .tl-task-title{color:var(--cyan)}
+
+  /* ── COLORS ── */
+  .c-cyan{background:rgba(0,240,255,.1);color:var(--cyan)}
+  .c-purple{background:rgba(124,58,237,.1);color:#a78bfa}
+  .c-green{background:rgba(34,197,94,.1);color:#4ade80}
+  .c-orange{background:rgba(251,146,60,.1);color:#fb923c}
+  .c-pink{background:rgba(236,72,153,.1);color:#f472b6}
+  .c-blue{background:rgba(59,130,246,.1);color:#60a5fa}
+  .c-yellow{background:rgba(234,179,8,.1);color:#facc15}
+  .c-red{background:rgba(239,68,68,.1);color:#f87171}
+
+  /* ── TOTAL BAR ── */
+  .total-bar{background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(124,58,237,.06));border:1px solid rgba(0,240,255,.15);border-radius:14px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-top:1.5rem}
+  .total-label{font-size:.8rem;color:var(--text)}
+  .total-amount{font-size:1.4rem;font-weight:800;color:var(--cyan)}
+  .total-note{font-size:.75rem;color:#475569}
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-track{background:var(--navy)}
+  ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><span>SLP</span> MEDIA — AI System</div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab" onclick="switchTab('agents')">Agents</button>
+    <button class="tab" onclick="switchTab('flow')">Data Flow</button>
+    <button class="tab" onclick="switchTab('stack')">Stack</button>
+    <button class="tab" onclick="switchTab('timeline')">Build Plan</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="badge"><span class="dot"></span>Full Stack AI Operating System</div>
+  <h1>Your Business <span>Runs Itself</span></h1>
+  <p>Every agent, every tool, every automation — mapped out. You handle sales calls and client calls. Everything else is automated.</p>
+</div>
+
+<!-- ════════════════ OVERVIEW ════════════════ -->
+<div id="view-overview" class="view active">
+
+  <div class="jarvis-card">
+    <div class="jarvis-title">🤖 Jarvis — The Ops Agent</div>
+    <div class="jarvis-sub">The central intelligence. You message it on WhatsApp. It reads your request, decides which agent to trigger, and takes action. The single control layer over everything below.</div>
+    <div class="jarvis-tags">
+      <span class="jarvis-tag">Claude API</span>
+      <span class="jarvis-tag">n8n</span>
+      <span class="jarvis-tag">WhatsApp Business API</span>
+      <span class="jarvis-tag">GHL API</span>
+      <span class="jarvis-tag">Meta API</span>
+    </div>
+  </div>
+
+  <div class="section-label">Lead Generation</div>
+  <div class="agents-grid">
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-cyan" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">🎯</div>
+        <div>
+          <div class="agent-num">AGENT 01</div>
+          <div class="agent-name">The Prospector</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> Daily on schedule or on-demand<br><strong>Output:</strong> Qualified leads pushed into GHL pipeline</div>
+      <div class="agent-tools">
+        <span class="agent-tool">Clay</span>
+        <span class="agent-tool">Apify</span>
+        <span class="agent-tool">Google Maps API</span>
+        <span class="agent-tool">n8n</span>
+        <span class="agent-tool">GHL API</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-blue" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">📧</div>
+        <div>
+          <div class="agent-num">AGENT 02</div>
+          <div class="agent-name">The Outbound Agent</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> Continuously, 50–200 emails/day<br><strong>Output:</strong> Warm replies routed into GHL automatically</div>
+      <div class="agent-tools">
+        <span class="agent-tool">Instantly.ai</span>
+        <span class="agent-tool">Clay</span>
+        <span class="agent-tool">Claude API</span>
+        <span class="agent-tool">n8n</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-purple" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">🔍</div>
+        <div>
+          <div class="agent-num">AGENT 03</div>
+          <div class="agent-name">The Qualifier</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> On funnel submission (instant)<br><strong>Output:</strong> Contact created in GHL with lead score + tags</div>
+      <div class="agent-tools">
+        <span class="agent-tool">Funnel webhook</span>
+        <span class="agent-tool">GHL API</span>
+        <span class="agent-tool">n8n</span>
+        <span class="agent-tool">Claude API</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Booking & Sales</div>
+  <div class="agents-grid">
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-green" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">📅</div>
+        <div>
+          <div class="agent-num">AGENT 04</div>
+          <div class="agent-name">The Setter</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> 5-day follow-up from first contact<br><strong>Output:</strong> Booked call or moved to nurture</div>
+      <div class="agent-tools">
+        <span class="agent-tool">GHL Workflows</span>
+        <span class="agent-tool">Conversation AI</span>
+        <span class="agent-tool">Calendly API</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-yellow" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">🎙️</div>
+        <div>
+          <div class="agent-num">AGENT 05</div>
+          <div class="agent-name">Call Prep Agent</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> 30 mins before every booked call<br><strong>Output:</strong> 1-page brief with research + pitch angle</div>
+      <div class="agent-tools">
+        <span class="agent-tool">Claude API</span>
+        <span class="agent-tool">Apify</span>
+        <span class="agent-tool">Meta Ad Library</span>
+        <span class="agent-tool">n8n</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-orange" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">📋</div>
+        <div>
+          <div class="agent-num">AGENT 06</div>
+          <div class="agent-name">Proposal Agent</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> On lead qualification (high score)<br><strong>Output:</strong> Custom branded proposal sent to lead</div>
+      <div class="agent-tools">
+        <span class="agent-tool">Claude API</span>
+        <span class="agent-tool">PandaDoc API</span>
+        <span class="agent-tool">GHL API</span>
+        <span class="agent-tool">n8n</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Client Ops & Delivery</div>
+  <div class="agents-grid">
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-cyan" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">⚡</div>
+        <div>
+          <div class="agent-num">AGENT 07</div>
+          <div class="agent-name">Account Builder</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> On new client intake form submission<br><strong>Output:</strong> Full GHL sub-account live in 3 mins</div>
+      <div class="agent-tools">
+        <span class="agent-tool">GHL API</span>
+        <span class="agent-tool">GHL Snapshots</span>
+        <span class="agent-tool">n8n</span>
+        <span class="agent-tool">deploy-client.js</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-pink" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">🎨</div>
+        <div>
+          <div class="agent-num">AGENT 08</div>
+          <div class="agent-name">Creative Director</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> On brief submission (new campaign)<br><strong>Output:</strong> Creatives + copy + Meta campaign live</div>
+      <div class="agent-tools">
+        <span class="agent-tool">AdCreative.ai</span>
+        <span class="agent-tool">Creatify</span>
+        <span class="agent-tool">Claude API</span>
+        <span class="agent-tool">Meta Marketing API</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-blue" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">📊</div>
+        <div>
+          <div class="agent-num">AGENT 09</div>
+          <div class="agent-name">Reporting Agent</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> 7am daily (you) + weekly (clients)<br><strong>Output:</strong> Performance brief to WhatsApp + client emails</div>
+      <div class="agent-tools">
+        <span class="agent-tool">GHL API</span>
+        <span class="agent-tool">Meta API</span>
+        <span class="agent-tool">Claude API</span>
+        <span class="agent-tool">n8n</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-green" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">✍️</div>
+        <div>
+          <div class="agent-num">AGENT 10</div>
+          <div class="agent-name">Content Agent</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> Weekly per client<br><strong>Output:</strong> 30 days of posts scheduled automatically</div>
+      <div class="agent-tools">
+        <span class="agent-tool">Claude API</span>
+        <span class="agent-tool">Buffer API</span>
+        <span class="agent-tool">Instagram API</span>
+        <span class="agent-tool">n8n</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-yellow" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">⭐</div>
+        <div>
+          <div class="agent-num">AGENT 11</div>
+          <div class="agent-name">Review Agent</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> 3 weeks after onboarding + monitors daily<br><strong>Output:</strong> Review requests sent, responses drafted</div>
+      <div class="agent-tools">
+        <span class="agent-tool">GHL Workflows</span>
+        <span class="agent-tool">Google Business API</span>
+        <span class="agent-tool">Claude API</span>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-head">
+        <div class="card-icon c-red" style="border-radius:10px;width:36px;height:36px;font-size:1.1rem">🔁</div>
+        <div>
+          <div class="agent-num">AGENT 12</div>
+          <div class="agent-name">Reactivation Agent</div>
+        </div>
+      </div>
+      <div class="agent-trigger"><strong>Runs:</strong> Every 90 days on cold/lost contacts<br><strong>Output:</strong> Re-engaged leads re-enter booking sequence</div>
+      <div class="agent-tools">
+        <span class="agent-tool">GHL Workflows</span>
+        <span class="agent-tool">Claude API</span>
+        <span class="agent-tool">n8n</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ AGENTS ════════════════ -->
+<div id="view-agents" class="view">
+  <div class="section-label">What Each Agent Actually Does</div>
+  <div style="display:flex;flex-direction:column;gap:1rem">
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+        <div class="card-icon c-cyan">🎯</div>
+        <div><div class="card-title">The Prospector</div><div style="font-size:.72rem;color:#475569">AGENT 01 — Lead Generation</div></div>
+      </div>
+      <div class="card-desc">You define your ideal client — industry, city, review count range, business size. The Prospector scrapes Google Maps and LinkedIn via Clay, finds every matching business, enriches each with email, phone, and website, checks for duplicates against your existing GHL contacts, then pushes net-new leads directly into your prospecting pipeline. Runs on a daily schedule or whenever you message Jarvis "find me 50 plumbers in Manchester."</div>
+      <div class="tools-row">
+        <span class="tool-tag">Clay</span><span class="tool-tag">Apify</span><span class="tool-tag">Google Maps API</span><span class="tool-tag">n8n</span><span class="tool-tag">GHL API</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+        <div class="card-icon c-blue">📧</div>
+        <div><div class="card-title">The Outbound Agent</div><div style="font-size:.72rem;color:#475569">AGENT 02 — Cold Outreach</div></div>
+      </div>
+      <div class="card-desc">Takes the Prospector's leads and enters them into cold email sequences via Instantly.ai. Sends 50–200 emails per day from a warmed sending domain. When someone replies, n8n intercepts the reply, Claude reads it and classifies it as interested / not interested / question. Interested replies get moved to GHL and Claude sends an intelligent first response. You only see the people who want to talk.</div>
+      <div class="tools-row">
+        <span class="tool-tag">Instantly.ai</span><span class="tool-tag">Clay</span><span class="tool-tag">Claude API</span><span class="tool-tag">n8n</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+        <div class="card-icon c-pink">🎨</div>
+        <div><div class="card-title">The Creative Director</div><div style="font-size:.72rem;color:#475569">AGENT 08 — Ad Production</div></div>
+      </div>
+      <div class="card-desc">You or a client submits a brief: offer, target audience, budget, tone. Claude writes 5 ad copy variants with hooks, primary text, and CTAs. AdCreative.ai generates 10–20 visual variants. n8n sends you a WhatsApp with preview links. You approve with one tap. n8n then calls the Meta Marketing API to create the campaign, ad sets, targeting, upload creatives, attach copy, and set budget. Campaign is live without you opening Ads Manager once.</div>
+      <div class="tools-row">
+        <span class="tool-tag">Claude API</span><span class="tool-tag">AdCreative.ai</span><span class="tool-tag">Creatify</span><span class="tool-tag">Meta Marketing API</span><span class="tool-tag">n8n</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+        <div class="card-icon c-blue">📊</div>
+        <div><div class="card-title">Morning Report Agent</div><div style="font-size:.72rem;color:#475569">AGENT 09 — Intelligence</div></div>
+      </div>
+      <div class="card-desc">Every morning at 7am, pulls data from GHL (new leads, pipeline movement, calls booked, revenue closed), Meta Ads (spend, CPL, ROAS per client), and Google Ads. Claude writes a 10-line business brief — what happened, what needs attention, what's performing. Delivered to your WhatsApp before you're out of bed. Separate weekly reports auto-emailed to each client with their numbers.</div>
+      <div class="tools-row">
+        <span class="tool-tag">GHL API</span><span class="tool-tag">Meta API</span><span class="tool-tag">Google Ads API</span><span class="tool-tag">Claude API</span><span class="tool-tag">n8n</span><span class="tool-tag">WhatsApp API</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ DATA FLOW ════════════════ -->
+<div id="view-flow" class="view">
+  <div class="section-label">How a Lead Moves Through the System</div>
+  <div class="flow-list">
+
+    <div class="flow-item">
+      <div class="flow-left"><div class="flow-stage">Discovery<div class="flow-dot"></div></div></div>
+      <div class="flow-right">
+        <div class="flow-cards">
+          <div class="flow-card"><div class="flow-card-title">Prospector scrapes Google Maps</div><div class="flow-card-sub">Clay finds 50 matching businesses in target area</div></div>
+          <div class="flow-card"><div class="flow-card-title">Enrichment</div><div class="flow-card-sub">Email, phone, website, review count added</div></div>
+          <div class="flow-card"><div class="flow-card-title">Dedup check</div><div class="flow-card-sub">Removes anyone already in GHL</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-item">
+      <div class="flow-left"><div class="flow-stage">Outreach<div class="flow-dot"></div></div></div>
+      <div class="flow-right">
+        <div class="flow-cards">
+          <div class="flow-card"><div class="flow-card-title">Cold email sequence starts</div><div class="flow-card-sub">Instantly.ai — 3 touch sequence over 7 days</div></div>
+          <div class="flow-card"><div class="flow-card-title">Reply detection</div><div class="flow-card-sub">n8n catches replies, Claude classifies intent</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-item">
+      <div class="flow-left"><div class="flow-stage">Qualification<div class="flow-dot"></div></div></div>
+      <div class="flow-right">
+        <div class="flow-cards">
+          <div class="flow-card"><div class="flow-card-title">Warm reply → sent to funnel</div><div class="flow-card-sub">Link to qualifying funnel in reply</div></div>
+          <div class="flow-card"><div class="flow-card-title">Funnel completed</div><div class="flow-card-sub">8 qualifying answers + lead score 0–100</div></div>
+          <div class="flow-card"><div class="flow-card-title">GHL contact created</div><div class="flow-card-sub">All answers mapped to custom fields + tags</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-item">
+      <div class="flow-left"><div class="flow-stage">Follow-Up<div class="flow-dot"></div></div></div>
+      <div class="flow-right">
+        <div class="flow-cards">
+          <div class="flow-card"><div class="flow-card-title">Setter agent activates</div><div class="flow-card-sub">SMS + email sequence referencing their answers</div></div>
+          <div class="flow-card"><div class="flow-card-title">Call booked via Calendly</div><div class="flow-card-sub">GHL pipeline moves to "Call Booked"</div></div>
+          <div class="flow-card"><div class="flow-card-title">Show-Up reminders fire</div><div class="flow-card-sub">24hr + 1hr before, confirmation sent</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-item">
+      <div class="flow-left"><div class="flow-stage">Sales Call<div class="flow-dot"></div></div></div>
+      <div class="flow-right">
+        <div class="flow-cards">
+          <div class="flow-card" style="border-color:rgba(0,240,255,.2)"><div class="flow-card-title" style="color:var(--cyan)">👤 You take the call</div><div class="flow-card-sub">30 mins before: prep brief auto-sent to your WhatsApp</div></div>
+          <div class="flow-card"><div class="flow-card-title">Call recorded + transcribed</div><div class="flow-card-sub">Action items extracted, follow-up drafted by Claude</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-item">
+      <div class="flow-left"><div class="flow-stage">Close<div class="flow-dot"></div></div></div>
+      <div class="flow-right">
+        <div class="flow-cards">
+          <div class="flow-card"><div class="flow-card-title">Deal marked Won</div><div class="flow-card-sub">Triggers contract via PandaDoc automatically</div></div>
+          <div class="flow-card"><div class="flow-card-title">Payment created</div><div class="flow-card-sub">Stripe subscription created on contract sign</div></div>
+          <div class="flow-card"><div class="flow-card-title">Account Builder fires</div><div class="flow-card-sub">GHL sub-account created, funnel deployed</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+
+    <div class="flow-item">
+      <div class="flow-left"><div class="flow-stage">Delivery<div class="flow-dot"></div></div></div>
+      <div class="flow-right">
+        <div class="flow-cards">
+          <div class="flow-card"><div class="flow-card-title">Creative Director launches ads</div><div class="flow-card-sub">Campaigns live within 24hrs of onboarding</div></div>
+          <div class="flow-card"><div class="flow-card-title">Content Agent runs weekly</div><div class="flow-card-sub">Posts scheduled for 30 days</div></div>
+          <div class="flow-card"><div class="flow-card-title">Reporting Agent sends weekly</div><div class="flow-card-sub">Client gets auto performance report every Monday</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ STACK ════════════════ -->
+<div id="view-stack" class="view">
+  <div class="section-label">Full Tech Stack</div>
+  <div class="stack-grid">
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">⚙️</span><span class="stack-name">n8n</span><span class="stack-cost">£20/mo</span></div>
+      <div class="stack-desc">The orchestration engine. Connects every tool, runs on a schedule, handles webhooks, triggers agents. The most important tool in the stack — learn this first.</div>
+      <div class="stack-used"><strong>Used by:</strong> Every single agent</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">🧠</span><span class="stack-name">Claude API</span><span class="stack-cost">~£40/mo</span></div>
+      <div class="stack-desc">The intelligence layer. Writes copy, reads data, makes decisions, handles conversations, writes reports, classifies replies. The brain behind every agent.</div>
+      <div class="stack-used"><strong>Used by:</strong> Outbound, Qualifier, Proposal, Reporting, Content, Call Prep, Jarvis</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">🏗️</span><span class="stack-name">GoHighLevel API</span><span class="stack-cost">Included in plan</span></div>
+      <div class="stack-desc">Full programmatic control of your GHL. Create sub-accounts, load snapshots, manage contacts, move pipeline stages, trigger workflows — all without touching the UI.</div>
+      <div class="stack-used"><strong>Used by:</strong> Account Builder, Qualifier, Setter, Reactivation, Reporting</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">🔍</span><span class="stack-name">Clay</span><span class="stack-cost">£149/mo</span></div>
+      <div class="stack-desc">Finds and enriches leads. Scrapes Google Maps, LinkedIn, Apollo. Returns email, phone, company info, review count. Feeds directly into the outbound sequence.</div>
+      <div class="stack-used"><strong>Used by:</strong> Prospector, Outbound</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">📧</span><span class="stack-name">Instantly.ai</span><span class="stack-cost">£37/mo</span></div>
+      <div class="stack-desc">Cold email infrastructure at scale. Separate sending domain so your main domain stays clean. Handles sending limits, warm-up, reply detection.</div>
+      <div class="stack-used"><strong>Used by:</strong> Outbound Agent</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">🎨</span><span class="stack-name">AdCreative.ai</span><span class="stack-cost">£149/mo</span></div>
+      <div class="stack-desc">Generates ad creatives scored by predicted performance. Feed it brand colours and offer, get back 20 visual variants in minutes. Has an API for automation.</div>
+      <div class="stack-used"><strong>Used by:</strong> Creative Director</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">🎬</span><span class="stack-name">Creatify</span><span class="stack-cost">£99/mo</span></div>
+      <div class="stack-desc">AI video ads with avatars that look like real UGC content. Script goes in, video ad comes out. Huge performance boost for clients running video campaigns.</div>
+      <div class="stack-used"><strong>Used by:</strong> Creative Director</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">📱</span><span class="stack-name">Meta Marketing API</span><span class="stack-cost">Free</span></div>
+      <div class="stack-desc">Programmatic control of Meta Ads Manager. Create campaigns, ad sets, upload creatives, set budgets and targeting — without touching the dashboard.</div>
+      <div class="stack-used"><strong>Used by:</strong> Creative Director</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">💬</span><span class="stack-name">WhatsApp Business API</span><span class="stack-cost">~£10/mo</span></div>
+      <div class="stack-desc">Your interface to the whole system. Receive morning reports, approve campaigns, message Jarvis with commands. The front-end of your AI operating system.</div>
+      <div class="stack-used"><strong>Used by:</strong> Jarvis, Reporting, Call Prep, Creative Director</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">🕷️</span><span class="stack-name">Apify</span><span class="stack-cost">£49/mo</span></div>
+      <div class="stack-desc">Custom web scraping for anything Clay can't handle. Google Maps, Facebook Ads Library, competitor websites, Trustpilot reviews, Instagram profiles.</div>
+      <div class="stack-used"><strong>Used by:</strong> Prospector, Call Prep, Competitor Monitor</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">📄</span><span class="stack-name">PandaDoc API</span><span class="stack-cost">£25/mo</span></div>
+      <div class="stack-desc">Auto-generates and sends contracts when a deal closes. Tracks when signed, triggers payment creation. Replaces all manual contract admin.</div>
+      <div class="stack-used"><strong>Used by:</strong> Close automation</div>
+    </div>
+
+    <div class="stack-card">
+      <div class="stack-head"><span class="stack-icon">💳</span><span class="stack-name">Stripe / GoCardless</span><span class="stack-cost">% of revenue</span></div>
+      <div class="stack-desc">Payment and subscriptions. Triggered automatically when contract is signed. Handles recurring billing, failed payment retries, and overdue notifications.</div>
+      <div class="stack-used"><strong>Used by:</strong> Payment automation</div>
+    </div>
+
+  </div>
+
+  <div class="total-bar">
+    <div>
+      <div class="total-label">Total monthly stack cost (fully built)</div>
+      <div class="total-note">Excluding ad spend and GHL plan</div>
+    </div>
+    <div style="text-align:right">
+      <div class="total-amount">~£578/mo</div>
+      <div class="total-note">Less than a part-time employee's weekly wage</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ TIMELINE ════════════════ -->
+<div id="view-timeline" class="view">
+  <div class="section-label">Build Plan — What to Do Each Month</div>
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-month">Month 1<div class="tl-dot"></div></div></div>
+      <div class="tl-right">
+        <div class="tl-task highlight">
+          <div class="tl-task-title">Set up n8n + connect GHL API</div>
+          <div class="tl-task-desc">Sign up to n8n Cloud. Add GHL API key. Build one test workflow to confirm everything talks. Takes an afternoon.</div>
+        </div>
+        <div class="tl-task highlight">
+          <div class="tl-task-title">Build the Morning Report Agent</div>
+          <div class="tl-task-desc">Your first real agent. n8n + GHL API + Claude + WhatsApp. You'll use this every day — teaches you the full stack in one build.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Connect the funnel webhook to GHL</div>
+          <div class="tl-task-desc">Already coded — just drop your GHL webhook URL into funnel.html CLIENT_CONFIG and you're live.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-month">Month 2<div class="tl-dot"></div></div></div>
+      <div class="tl-right">
+        <div class="tl-task highlight">
+          <div class="tl-task-title">Build the Prospector Agent</div>
+          <div class="tl-task-desc">Sign up for Clay. Define your ICP. Build n8n workflow: Clay → dedup → push to GHL. You now have automated lead generation.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Launch cold outreach with Instantly.ai</div>
+          <div class="tl-task-desc">Set up a sending domain, warm it for 2 weeks, then connect to Prospector output. 50 emails/day to start.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Build the Account Builder Agent</div>
+          <div class="tl-task-desc">Map your GHL onboarding steps. Build n8n workflow triggered by intake form. New client = 3-minute setup.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-month">Month 3<div class="tl-dot"></div></div></div>
+      <div class="tl-right">
+        <div class="tl-task highlight">
+          <div class="tl-task-title">Build the Creative Director Agent</div>
+          <div class="tl-task-desc">Get Meta Developer App approved for ads_management. Connect AdCreative.ai. Build campaign creation workflow. Test with one client.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Build the Call Prep Agent</div>
+          <div class="tl-task-desc">n8n watches GHL for calls booked. 30 mins before, Apify scrapes the prospect's web presence. Claude writes the brief. Hits your WhatsApp.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Create GHL snapshot v1</div>
+          <div class="tl-task-desc">Once your GHL is fully set up and tested, snapshot it. First client deployment from snapshot to confirm it works.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-month">Month 4<div class="tl-dot"></div></div></div>
+      <div class="tl-right">
+        <div class="tl-task highlight">
+          <div class="tl-task-title">Build Jarvis — the Ops Agent</div>
+          <div class="tl-task-desc">Connect WhatsApp Business API to n8n. Claude reads every message you send, identifies intent, triggers the right agent. This is the final layer.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Add Proposal + Contract automation</div>
+          <div class="tl-task-desc">PandaDoc + Stripe. Deal closes → proposal sent → contract signed → payment created. Zero admin from you.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Build 3 snapshot variants</div>
+          <div class="tl-task-desc">Trades, Professional Services, E-commerce. Three versions of the same system with different copy and targeting built in.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-month">Month 5+<div class="tl-dot"></div></div></div>
+      <div class="tl-right">
+        <div class="tl-task">
+          <div class="tl-task-title">Client reporting automation</div>
+          <div class="tl-task-desc">Auto-emailed performance reports every Monday to every client. No manual reporting ever again.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Content Agent for clients</div>
+          <div class="tl-task-desc">Claude generates monthly content calendars. Buffer API schedules posts. Clients get social media on autopilot.</div>
+        </div>
+        <div class="tl-task">
+          <div class="tl-task-title">Package and sell the system</div>
+          <div class="tl-task-desc">By this point you have a proven, running system. You package it as a product and sell it to other agencies or businesses.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function switchTab(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>
